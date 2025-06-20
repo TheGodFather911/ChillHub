@@ -136,7 +136,7 @@ const SSHTerminal: React.FC = () => {
           switch (message.type) {
             case 'ready':
               terminal.writeln('\x1b[32m✓ SSH connection established\x1b[0m');
-              terminal.writeln('\x1b[33m⚡ Environment: SECRET=lMKLBbjNNlAzFfAfRCZZnhYm\x1b[0m');
+              terminal.writeln('\x1b[33m⚡ Environment: SECRET=Ask Owner For Your Own\x1b[0m');
               terminal.writeln('');
               setConnectionStatus('connected');
               setIsConnected(true);
@@ -281,7 +281,7 @@ const SSHTerminal: React.FC = () => {
       <div className="mt-3 text-xs text-gray-400 bg-gray-800/50 rounded-lg p-2">
         <div className="flex justify-between items-center">
           <span>🔐 root@adm.segfault.net</span>
-          <span>🌍 SECRET=lMKLBbjNNlAzFfAfRCZZnhYm</span>
+          <span>🌍 SECRET=Ask Owner For Your Own</span>
         </div>
         {isConnected && <p className="mt-1">💡 Click terminal to focus and start typing</p>}
       </div>
