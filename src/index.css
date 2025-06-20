@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply antialiased;
+  }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  }
+
+  /* Smooth transitions for all interactive elements */
+  button, input, textarea {
+    @apply transition-all duration-200;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg;
+  }
+  
+  .cozy-shadow {
+    box-shadow: 0 8px 32px rgba(255, 182, 193, 0.1), 0 2px 16px rgba(255, 165, 0, 0.05);
+  }
+}
+
+/* Custom animations */
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.gentle-float {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+/* Terminal specific styles */
+.xterm {
+  padding: 0;
+}
+
+.xterm .xterm-viewport {
+  background-color: transparent !important;
+}
+
+.xterm-screen {
+  padding: 12px;
+}
