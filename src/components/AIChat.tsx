@@ -14,7 +14,7 @@ const AIChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello! I'm your AI assistant. I'm here to help you with anything you need. How can I assist you today?",
+      text: "Oh ! Hello MotherFucker. How can I assist you today? (make it quick, I have no time)",
       isUser: false,
       timestamp: new Date()
     }
@@ -121,8 +121,8 @@ const AIChat: React.FC = () => {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: isConnected 
-          ? "I'm sorry, I'm having trouble processing your request right now. Please try again."
-          : "I'm not connected to the AI service. Please make sure the backend server is running with a valid Gemini API key.",
+          ? "OH SHIT ! AM HAVING TROUBLES. Sorry (not sorry)"
+          : "Nigga I'm not connected to the AI service. Make sure the backend server is running with a valid Gemini API key.",
         isUser: false,
         timestamp: new Date()
       };
