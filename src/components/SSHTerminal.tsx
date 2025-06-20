@@ -39,7 +39,7 @@ const SSHTerminal: React.FC = () => {
           brightWhite: '#f8f9fa'
         },
         fontFamily: '"JetBrains Mono", "Fira Code", "Monaco", "Menlo", monospace',
-        fontSize: 14,
+        fontSize: 13,
         lineHeight: 1.2,
         cursorBlink: true,
         allowTransparency: true,
@@ -56,7 +56,7 @@ const SSHTerminal: React.FC = () => {
       fitAddon.fit();
       fitAddonRef.current = fitAddon;
 
-      // Welcome message
+      // Welcome message - compact
       term.writeln('\x1b[1;32m╔═══════════════════════════════════════╗\x1b[0m');
       term.writeln('\x1b[1;32m║\x1b[0m \x1b[1;36mCozy SSH Terminal\x1b[0m                   \x1b[1;32m║\x1b[0m');
       term.writeln('\x1b[1;32m║\x1b[0m \x1b[33mClick Connect to start SSH session\x1b[0m   \x1b[1;32m║\x1b[0m');
@@ -205,35 +205,35 @@ const SSHTerminal: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gradient-to-r from-green-400 to-blue-400 rounded-xl">
-            <TerminalIcon className="w-5 h-5 text-white" />
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-2">
+          <div className="p-1.5 bg-gradient-to-r from-green-400 to-blue-400 rounded-lg">
+            <TerminalIcon className="w-4 h-4 text-white" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-100">SSH Terminal</h2>
+          <h2 className="text-lg font-semibold text-gray-100">SSH Terminal</h2>
         </div>
         
-        <div className="flex items-center space-x-4">
-          <div className={`flex items-center space-x-2 ${getStatusColor()}`}>
+        <div className="flex items-center space-x-3">
+          <div className={`flex items-center space-x-1 ${getStatusColor()}`}>
             {isConnected ? (
-              <Wifi className="w-4 h-4" />
+              <Wifi className="w-3 h-3" />
             ) : (
-              <WifiOff className="w-4 h-4" />
+              <WifiOff className="w-3 h-3" />
             )}
-            <span className="text-sm">{getStatusText()}</span>
+            <span className="text-xs">{getStatusText()}</span>
           </div>
           
           {connectionStatus === 'disconnected' || connectionStatus === 'error' ? (
             <button
               onClick={connectToSSH}
-              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm rounded-lg transition-colors duration-200"
+              className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs rounded-md transition-colors duration-200"
             >
               Connect
             </button>
           ) : (
             <button
               onClick={disconnect}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-lg transition-colors duration-200"
+              className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition-colors duration-200"
             >
               Disconnect
             </button>
@@ -244,15 +244,16 @@ const SSHTerminal: React.FC = () => {
       <div 
         ref={terminalRef} 
         onClick={handleTerminalClick}
-        className="flex-1 bg-gray-900 rounded-2xl p-4 font-mono text-sm cursor-text"
-        style={{ minHeight: '300px' }}
+        className="flex-1 bg-gray-900 rounded-xl p-3 font-mono text-sm cursor-text"
+        style={{ minHeight: '200px' }}
       />
 
-      <div className="mt-4 text-xs text-gray-400 bg-gray-800/50 rounded-lg p-3">
-        <p>🔐 Target: root@adm.segfault.net</p>
-        <p>🌍 Environment: SECRET=lMKLBbjNNlAzFfAfRCZZnhYm</p>
-        <p>⚙️ Backend required: ws://localhost:3001</p>
-        {isConnected && <p>💡 Click in the terminal area to focus and start typing</p>}
+      <div className="mt-3 text-xs text-gray-400 bg-gray-800/50 rounded-lg p-2">
+        <div className="flex justify-between items-center">
+          <span>🔐 root@adm.segfault.net</span>
+          <span>🌍 SECRET=lMKLBbjNNlAzFfAfRCZZnhYm</span>
+        </div>
+        {isConnected && <p className="mt-1">💡 Click terminal to focus and start typing</p>}
       </div>
     </div>
   );

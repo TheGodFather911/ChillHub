@@ -14,26 +14,24 @@ function App() {
       <div className="relative z-10">
         <Header />
         
-        {/* Main content grid */}
-        <main className="container mx-auto px-6 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-12rem)]">
-            {/* YouTube Player */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 p-6 hover:shadow-xl transition-all duration-300">
+        {/* Main content grid - optimized layout */}
+        <main className="container mx-auto px-6 py-4">
+          <div className="grid grid-cols-12 gap-6 h-[calc(100vh-10rem)]">
+            {/* Top row - Music Player (compact) and Terminal (wider) */}
+            <div className="col-span-4 bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 p-4 hover:shadow-xl transition-all duration-300">
               <YouTubePlayer />
             </div>
             
-            {/* SSH Terminal */}
-            <div className="bg-gray-900/95 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-700/50 p-6 hover:shadow-xl transition-all duration-300">
+            <div className="col-span-8 bg-gray-900/95 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-700/50 p-4 hover:shadow-xl transition-all duration-300">
               <SSHTerminal />
             </div>
             
-            {/* Notebook */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 p-6 hover:shadow-xl transition-all duration-300">
+            {/* Bottom row - Notebook (larger) and AI Chat (taller) */}
+            <div className="col-span-7 bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 p-4 hover:shadow-xl transition-all duration-300">
               <Notebook />
             </div>
             
-            {/* AI Chat */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 p-6 hover:shadow-xl transition-all duration-300">
+            <div className="col-span-5 bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 p-4 hover:shadow-xl transition-all duration-300">
               <AIChat />
             </div>
           </div>
