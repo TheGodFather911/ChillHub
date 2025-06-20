@@ -13,7 +13,6 @@ This backend server provides SSH proxy and AI chat functionality for the Cozy Da
 ### 1. Install Dependencies
 
 ```bash
-cd backend
 npm install
 ```
 
@@ -85,6 +84,9 @@ SSH_PASSWORD=your_actual_password
 
 ```bash
 # Development mode (auto-restart on changes)
+npm run dev:backend
+
+# Start frontend and backend together
 npm run dev
 
 # Production mode
@@ -134,4 +136,4 @@ The server uses:
 - ssh2 for SSH client functionality
 - Google Generative AI for chat responses
 
-For development, use `npm run dev` to enable auto-restart on file changes.
+For development, use `npm run dev:backend` to enable auto-restart on file changes.
