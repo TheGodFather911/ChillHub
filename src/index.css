@@ -39,6 +39,19 @@
   .cozy-shadow {
     box-shadow: 0 8px 32px rgba(255, 182, 193, 0.1), 0 2px 16px rgba(255, 165, 0, 0.05);
   }
+
+  /* Custom scrollbar utilities */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+
+  .scrollbar-track-gray-100::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
 }
 
 /* Custom animations */
@@ -66,4 +79,11 @@
 
 .xterm-screen {
   padding: 12px;
+}
+
+/* Ensure proper text wrapping in chat messages */
+.break-words {
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }

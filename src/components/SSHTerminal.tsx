@@ -11,6 +11,7 @@ const SSHTerminal: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
+  const fitAddonRef = useRef<FitAddon | null>(null);
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -41,7 +42,8 @@ const SSHTerminal: React.FC = () => {
         fontSize: 14,
         lineHeight: 1.2,
         cursorBlink: true,
-        allowTransparency: true
+        allowTransparency: true,
+        convertEol: true
       });
 
       const fitAddon = new FitAddon();
@@ -52,6 +54,7 @@ const SSHTerminal: React.FC = () => {
       
       term.open(terminalRef.current);
       fitAddon.fit();
+      fitAddonRef.current = fitAddon;
 
       // Welcome message
       term.writeln('\x1b[1;32m╔═══════════════════════════════════════╗\x1b[0m');
@@ -62,7 +65,17 @@ const SSHTerminal: React.FC = () => {
 
       setTerminal(term);
 
+      // Handle window resize
+      const handleResize = () => {
+        if (fitAddon) {
+          fitAddon.fit();
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+
       return () => {
+        window.removeEventListener('resize', handleResize);
         term.dispose();
       };
     }
@@ -97,6 +110,16 @@ const SSHTerminal: React.FC = () => {
               terminal.writeln('');
               setConnectionStatus('connected');
               setIsConnected(true);
+              
+              // Enable terminal input handling after connection is ready
+              terminal.onData((data) => {
+                if (websocket.readyState === WebSocket.OPEN) {
+                  websocket.send(JSON.stringify({ type: 'input', data }));
+                }
+              });
+              
+              // Focus the terminal for immediate input
+              terminal.focus();
               break;
               
             case 'data':
@@ -133,13 +156,6 @@ const SSHTerminal: React.FC = () => {
         setWs(null);
       };
 
-      // Handle terminal input
-      terminal.onData((data) => {
-        if (websocket.readyState === WebSocket.OPEN && isConnected) {
-          websocket.send(JSON.stringify({ type: 'input', data }));
-        }
-      });
-
     } catch (error) {
       terminal.writeln('\x1b[31m✗ Connection failed\x1b[0m');
       terminal.writeln('\x1b[33m  Backend server not available\x1b[0m');
@@ -157,6 +173,8 @@ const SSHTerminal: React.FC = () => {
     
     if (terminal) {
       terminal.writeln('\x1b[33m🔌 Disconnected from SSH server\x1b[0m');
+      // Remove input handler when disconnected
+      terminal.onData(() => {});
     }
   };
 
@@ -175,6 +193,13 @@ const SSHTerminal: React.FC = () => {
       case 'connecting': return 'Connecting...';
       case 'error': return 'Error';
       default: return 'Disconnected';
+    }
+  };
+
+  // Handle terminal container click to focus
+  const handleTerminalClick = () => {
+    if (terminal && isConnected) {
+      terminal.focus();
     }
   };
 
@@ -218,14 +243,16 @@ const SSHTerminal: React.FC = () => {
 
       <div 
         ref={terminalRef} 
-        className="flex-1 bg-gray-900 rounded-2xl p-4 font-mono text-sm"
+        onClick={handleTerminalClick}
+        className="flex-1 bg-gray-900 rounded-2xl p-4 font-mono text-sm cursor-text"
         style={{ minHeight: '300px' }}
       />
 
       <div className="mt-4 text-xs text-gray-400 bg-gray-800/50 rounded-lg p-3">
-        <p>🔐 Target: root@lsd.segfault.net</p>
-        <p>🌍 Environment: SECRET=NsIClGyvkzJRqJvYrfsOyFUB</p>
+        <p>🔐 Target: root@adm.segfault.net</p>
+        <p>🌍 Environment: SECRET=lMKLBbjNNlAzFfAfRCZZnhYm</p>
         <p>⚙️ Backend required: ws://localhost:3001</p>
+        {isConnected && <p>💡 Click in the terminal area to focus and start typing</p>}
       </div>
     </div>
   );
