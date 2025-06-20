@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, Sparkles, Bot, User } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Message {
   id: string;
@@ -9,6 +10,7 @@ interface Message {
 }
 
 const AIChat: React.FC = () => {
+  const { isDark } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -22,6 +24,7 @@ const AIChat: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,6 +37,31 @@ const AIChat: React.FC = () => {
   // Check backend connection on mount
   useEffect(() => {
     checkBackendConnection();
+  }, []);
+
+  // Handle scroll isolation
+  useEffect(() => {
+    const messagesContainer = messagesContainerRef.current;
+    if (!messagesContainer) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
+      const isAtTop = scrollTop === 0;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+      
+      // Prevent page scroll when scrolling within the container
+      if ((e.deltaY < 0 && !isAtTop) || (e.deltaY > 0 && !isAtBottom)) {
+        e.preventDefault();
+      }
+    };
+
+    messagesContainer.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      messagesContainer.removeEventListener('wheel', handleWheel);
+    };
   }, []);
 
   const checkBackendConnection = async () => {
@@ -122,7 +150,9 @@ const AIChat: React.FC = () => {
         <div className="p-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-xl">
           <MessageCircle className="w-5 h-5 text-white" />
         </div>
-        <h2 className="text-xl font-semibold text-gray-800">AI Assistant</h2>
+        <h2 className={`text-xl font-semibold transition-colors duration-300 ${
+          isDark ? 'text-gray-100' : 'text-gray-800'
+        }`}>AI Assistant</h2>
         <div className={`flex items-center space-x-1 text-xs rounded-full px-3 py-1 ${
           isConnected 
             ? 'text-green-600 bg-green-100' 
@@ -133,8 +163,16 @@ const AIChat: React.FC = () => {
         </div>
       </div>
 
-      {/* Messages container */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4 p-4 bg-gradient-to-b from-gray-50/50 to-white/50 rounded-2xl">
+      {/* Messages container with scroll isolation */}
+      <div 
+        ref={messagesContainerRef}
+        className={`flex-1 overflow-y-auto mb-4 space-y-4 p-4 rounded-2xl transition-colors duration-300 scrollbar-thin ${
+          isDark 
+            ? 'bg-gradient-to-b from-gray-700/50 to-gray-800/50 scrollbar-thumb-gray-600 scrollbar-track-gray-800' 
+            : 'bg-gradient-to-b from-gray-50/50 to-white/50 scrollbar-thumb-gray-300 scrollbar-track-gray-100'
+        }`}
+        style={{ scrollBehavior: 'smooth' }}
+      >
         {messages.map((message) => (
           <div
             key={message.id}
@@ -158,11 +196,15 @@ const AIChat: React.FC = () => {
               <div className={`rounded-2xl px-4 py-3 ${
                 message.isUser 
                   ? 'bg-gradient-to-r from-rose-400 to-orange-400 text-white' 
-                  : 'bg-white shadow-sm border border-gray-100'
+                  : isDark 
+                    ? 'bg-gray-700 shadow-sm border border-gray-600 text-gray-200'
+                    : 'bg-white shadow-sm border border-gray-100 text-gray-800'
               }`}>
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
               </div>
-              <p className="text-xs text-gray-500 mt-1 px-2">
+              <p className={`text-xs mt-1 px-2 transition-colors duration-300 ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}>
                 {formatTime(message.timestamp)}
               </p>
             </div>
@@ -174,7 +216,11 @@ const AIChat: React.FC = () => {
             <div className="p-2 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400">
               <Bot className="w-4 h-4 text-white" />
             </div>
-            <div className="bg-white shadow-sm border border-gray-100 rounded-2xl px-4 py-3">
+            <div className={`shadow-sm border rounded-2xl px-4 py-3 ${
+              isDark 
+                ? 'bg-gray-700 border-gray-600' 
+                : 'bg-white border-gray-100'
+            }`}>
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -188,7 +234,11 @@ const AIChat: React.FC = () => {
       </div>
 
       {/* Input area */}
-      <div className="flex items-center space-x-3 bg-white/80 rounded-2xl p-3 border border-gray-200/50">
+      <div className={`flex items-center space-x-3 rounded-2xl p-3 border transition-colors duration-300 ${
+        isDark 
+          ? 'bg-gray-700/80 border-gray-600/50' 
+          : 'bg-white/80 border-gray-200/50'
+      }`}>
         <input
           ref={inputRef}
           type="text"
@@ -196,7 +246,11 @@ const AIChat: React.FC = () => {
           onChange={(e) => setInputText(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder={isConnected ? "Ask me anything..." : "Backend not connected..."}
-          className="flex-1 outline-none bg-transparent text-gray-800 placeholder-gray-500"
+          className={`flex-1 outline-none bg-transparent transition-colors duration-300 ${
+            isDark 
+              ? 'text-gray-200 placeholder-gray-400' 
+              : 'text-gray-800 placeholder-gray-500'
+          }`}
           disabled={isLoading || !isConnected}
         />
         
@@ -209,7 +263,9 @@ const AIChat: React.FC = () => {
         </button>
       </div>
 
-      <div className="mt-3 text-xs text-gray-500 text-center">
+      <div className={`mt-3 text-xs text-center transition-colors duration-300 ${
+        isDark ? 'text-gray-400' : 'text-gray-500'
+      }`}>
         {isConnected 
           ? "💡 Powered by Gemini AI with custom system prompt"
           : "⚠️ Start the backend server to enable AI chat"

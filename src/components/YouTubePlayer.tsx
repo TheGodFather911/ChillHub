@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Music } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface YouTubePlayer {
   playVideo: () => void;
@@ -17,6 +18,7 @@ declare global {
 }
 
 const YouTubePlayerComponent: React.FC = () => {
+  const { isDark } = useTheme();
   const [player, setPlayer] = useState<YouTubePlayer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTitle, setCurrentTitle] = useState('No video loaded');
@@ -129,31 +131,45 @@ const YouTubePlayerComponent: React.FC = () => {
         <div className="p-1.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg">
           <Music className="w-4 h-4 text-white" />
         </div>
-        <h2 className="text-lg font-semibold text-gray-800">Music</h2>
-        <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+        <h2 className={`text-lg font-semibold transition-colors duration-300 ${
+          isDark ? 'text-gray-100' : 'text-gray-800'
+        }`}>Music</h2>
+        <div className={`text-xs px-2 py-1 rounded-full transition-colors duration-300 ${
+          isDark ? 'text-gray-400 bg-gray-700' : 'text-gray-500 bg-gray-100'
+        }`}>
           {currentVideoIndex + 1}/{playlist.length}
         </div>
       </div>
 
       {/* Video container - compact */}
-      <div className="bg-gray-100 rounded-xl overflow-hidden mb-3 flex-1">
+      <div className={`rounded-xl overflow-hidden mb-3 flex-1 transition-colors duration-300 ${
+        isDark ? 'bg-gray-700' : 'bg-gray-100'
+      }`}>
         <div ref={playerRef} className="w-full h-full min-h-[180px]"></div>
       </div>
 
       {/* Current track info - compact */}
       <div className="mb-3">
-        <p className="text-xs text-gray-600 mb-1">Now Playing</p>
-        <p className="text-sm font-medium text-gray-800 truncate leading-tight">{currentTitle}</p>
+        <p className={`text-xs mb-1 transition-colors duration-300 ${
+          isDark ? 'text-gray-400' : 'text-gray-600'
+        }`}>Now Playing</p>
+        <p className={`text-sm font-medium truncate leading-tight transition-colors duration-300 ${
+          isDark ? 'text-gray-200' : 'text-gray-800'
+        }`}>{currentTitle}</p>
       </div>
 
       {/* Controls - compact */}
       <div className="flex items-center justify-center space-x-2">
         <button
           onClick={previousTrack}
-          className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+          className={`p-2 rounded-lg transition-all duration-200 ${
+            isDark 
+              ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+          }`}
           disabled={playlist.length === 0}
         >
-          <SkipBack className="w-4 h-4 text-gray-700" />
+          <SkipBack className="w-4 h-4" />
         </button>
         
         <button
@@ -170,14 +186,20 @@ const YouTubePlayerComponent: React.FC = () => {
         
         <button
           onClick={nextTrack}
-          className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+          className={`p-2 rounded-lg transition-all duration-200 ${
+            isDark 
+              ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+          }`}
           disabled={playlist.length === 0}
         >
-          <SkipForward className="w-4 h-4 text-gray-700" />
+          <SkipForward className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="mt-2 text-xs text-gray-500 text-center">
+      <div className={`mt-2 text-xs text-center transition-colors duration-300 ${
+        isDark ? 'text-gray-400' : 'text-gray-500'
+      }`}>
         💡 Edit playlist.txt to add/remove songs
       </div>
     </div>

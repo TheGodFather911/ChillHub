@@ -7,6 +7,7 @@ import 'xterm/css/xterm.css';
 
 const SSHTerminal: React.FC = () => {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [terminal, setTerminal] = useState<Terminal | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -81,6 +82,35 @@ const SSHTerminal: React.FC = () => {
     }
   }, []);
 
+  // Handle scroll isolation for terminal
+  useEffect(() => {
+    const terminalContainer = terminalRef.current;
+    if (!terminalContainer) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      
+      // Get the terminal viewport element
+      const viewport = terminalContainer.querySelector('.xterm-viewport') as HTMLElement;
+      if (!viewport) return;
+      
+      const { scrollTop, scrollHeight, clientHeight } = viewport;
+      const isAtTop = scrollTop === 0;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+      
+      // Prevent page scroll when scrolling within the terminal
+      if ((e.deltaY < 0 && !isAtTop) || (e.deltaY > 0 && !isAtBottom)) {
+        e.preventDefault();
+      }
+    };
+
+    terminalContainer.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      terminalContainer.removeEventListener('wheel', handleWheel);
+    };
+  }, [terminal]);
+
   const connectToSSH = () => {
     if (!terminal) return;
 
@@ -106,7 +136,7 @@ const SSHTerminal: React.FC = () => {
           switch (message.type) {
             case 'ready':
               terminal.writeln('\x1b[32m✓ SSH connection established\x1b[0m');
-              terminal.writeln('\x1b[33m⚡ Environment: SECRET=NsIClGyvkzJRqJvYrfsOyFUB\x1b[0m');
+              terminal.writeln('\x1b[33m⚡ Environment: SECRET=lMKLBbjNNlAzFfAfRCZZnhYm\x1b[0m');
               terminal.writeln('');
               setConnectionStatus('connected');
               setIsConnected(true);
@@ -204,7 +234,7 @@ const SSHTerminal: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div ref={containerRef} className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           <div className="p-1.5 bg-gradient-to-r from-green-400 to-blue-400 rounded-lg">
@@ -244,7 +274,7 @@ const SSHTerminal: React.FC = () => {
       <div 
         ref={terminalRef} 
         onClick={handleTerminalClick}
-        className="flex-1 bg-gray-900 rounded-xl p-3 font-mono text-sm cursor-text"
+        className="flex-1 bg-gray-900 rounded-xl p-3 font-mono text-sm cursor-text overflow-hidden"
         style={{ minHeight: '200px' }}
       />
 
