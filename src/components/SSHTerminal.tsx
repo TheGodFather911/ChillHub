@@ -49,10 +49,10 @@ const SSHTerminal: React.FC = () => {
 
       const fitAddon = new FitAddon();
       const webLinksAddon = new WebLinksAddon();
-      
+
       term.loadAddon(fitAddon);
       term.loadAddon(webLinksAddon);
-      
+
       term.open(terminalRef.current);
       fitAddon.fit();
       fitAddonRef.current = fitAddon;
@@ -89,15 +89,15 @@ const SSHTerminal: React.FC = () => {
 
     const handleWheel = (e: WheelEvent) => {
       e.stopPropagation();
-      
+
       // Get the terminal viewport element
       const viewport = terminalContainer.querySelector('.xterm-viewport') as HTMLElement;
       if (!viewport) return;
-      
+
       const { scrollTop, scrollHeight, clientHeight } = viewport;
       const isAtTop = scrollTop === 0;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
-      
+
       // Prevent page scroll when scrolling within the terminal
       if ((e.deltaY < 0 && !isAtTop) || (e.deltaY > 0 && !isAtBottom)) {
         e.preventDefault();
@@ -105,7 +105,7 @@ const SSHTerminal: React.FC = () => {
     };
 
     terminalContainer.addEventListener('wheel', handleWheel, { passive: false });
-    
+
     return () => {
       terminalContainer.removeEventListener('wheel', handleWheel);
     };
@@ -119,11 +119,11 @@ const SSHTerminal: React.FC = () => {
 
     try {
       const websocket = new WebSocket('ws://localhost:3001');
-      
+
       websocket.onopen = () => {
         terminal.writeln('\x1b[32m✓ WebSocket connected\x1b[0m');
         terminal.writeln('\x1b[33m🔐 Establishing SSH connection...\x1b[0m');
-        
+
         // Send connect message
         websocket.send(JSON.stringify({ type: 'connect' }));
         setWs(websocket);
@@ -132,7 +132,7 @@ const SSHTerminal: React.FC = () => {
       websocket.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
-          
+
           switch (message.type) {
             case 'ready':
               terminal.writeln('\x1b[32m✓ SSH connection established\x1b[0m');
@@ -140,27 +140,27 @@ const SSHTerminal: React.FC = () => {
               terminal.writeln('');
               setConnectionStatus('connected');
               setIsConnected(true);
-              
+
               // Enable terminal input handling after connection is ready
               terminal.onData((data) => {
                 if (websocket.readyState === WebSocket.OPEN) {
                   websocket.send(JSON.stringify({ type: 'input', data }));
                 }
               });
-              
+
               // Focus the terminal for immediate input
               terminal.focus();
               break;
-              
+
             case 'data':
               terminal.write(message.data);
               break;
-              
+
             case 'error':
               terminal.writeln(`\x1b[31m✗ Error: ${message.data}\x1b[0m`);
               setConnectionStatus('error');
               break;
-              
+
             case 'close':
               terminal.writeln('\x1b[33m🔌 SSH connection closed\x1b[0m');
               setConnectionStatus('disconnected');
@@ -200,7 +200,7 @@ const SSHTerminal: React.FC = () => {
     setConnectionStatus('disconnected');
     setIsConnected(false);
     setWs(null);
-    
+
     if (terminal) {
       terminal.writeln('\x1b[33m🔌 Disconnected from SSH server\x1b[0m');
       // Remove input handler when disconnected
@@ -226,12 +226,7 @@ const SSHTerminal: React.FC = () => {
     }
   };
 
-  // Handle terminal container click to focus
-  const handleTerminalClick = () => {
-    if (terminal && isConnected) {
-      terminal.focus();
-    }
-  };
+  // Removed handleTerminalClick and onClick handler
 
   return (
     <div ref={containerRef} className="h-full flex flex-col">
@@ -242,7 +237,7 @@ const SSHTerminal: React.FC = () => {
           </div>
           <h2 className="text-lg font-semibold text-gray-100">SSH Terminal</h2>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <div className={`flex items-center space-x-1 ${getStatusColor()}`}>
             {isConnected ? (
@@ -252,7 +247,7 @@ const SSHTerminal: React.FC = () => {
             )}
             <span className="text-xs">{getStatusText()}</span>
           </div>
-          
+
           {connectionStatus === 'disconnected' || connectionStatus === 'error' ? (
             <button
               onClick={connectToSSH}
@@ -273,18 +268,9 @@ const SSHTerminal: React.FC = () => {
 
       <div 
         ref={terminalRef} 
-        onClick={handleTerminalClick}
         className="flex-1 bg-gray-900 rounded-xl p-3 font-mono text-sm cursor-text overflow-hidden"
         style={{ minHeight: '200px' }}
       />
-
-      <div className="mt-3 text-xs text-gray-400 bg-gray-800/50 rounded-lg p-2">
-        <div className="flex justify-between items-center">
-          <span>🔐 root@adm.segfault.net</span>
-          <span>🌍 SECRET=Ask Owner For Your Own</span>
-        </div>
-        {isConnected && <p className="mt-1">💡 Click terminal to focus and start typing</p>}
-      </div>
     </div>
   );
 };

@@ -34,7 +34,7 @@ function App() {
             className="grid gap-6 h-full"
             style={{
               gridTemplateColumns: '1fr 2fr 2fr',
-              gridTemplateRows: '1fr 2fr',
+              gridTemplateRows: '2fr 1fr',   // Music Player gets more height here
               gridTemplateAreas: `
                 "music ai ssh"
                 "notebook ai ssh"
@@ -42,7 +42,7 @@ function App() {
               minHeight: 0,
             }}
           >
-            {/* Music Player - top-left */}
+            {/* Music Player - top-left, bigger now */}
             <div
               style={{ gridArea: 'music', minHeight: 0, minWidth: 0 }}
               className={`backdrop-blur-sm rounded-3xl shadow-lg border p-4 hover:shadow-xl transition-all duration-300 overflow-hidden ${
@@ -72,7 +72,7 @@ function App() {
               <SSHTerminal />
             </div>
 
-            {/* Notebook - bottom-left */}
+            {/* Notebook - bottom-left, smaller now */}
             <div
               style={{ gridArea: 'notebook', minHeight: 0, minWidth: 0 }}
               className={`backdrop-blur-sm rounded-3xl shadow-lg border p-4 hover:shadow-xl transition-all duration-300 overflow-hidden ${
